@@ -1,6 +1,6 @@
 # Agent 开发规则
 
-> 指导 Claude Code 编写 `plugins/<plugin-name>/agents/` 下的 Agent 定义文件。
+> 指导 Claude Code 编写 `agents/` 下的 Agent 定义文件。
 
 ---
 
