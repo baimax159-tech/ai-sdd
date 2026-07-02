@@ -39,4 +39,4 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs placeholder-scan <file>.md           
 
 ## 更多信息
 
-- 插件主页：https://github.com/baimax159-tech/claude-forge
+- 插件主页：https://github.com/baimax159-tech/ai-sdd

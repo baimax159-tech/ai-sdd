@@ -7,8 +7,8 @@
     "name": "Max Bai",
     "email": "baimax159@gmail.com"
   },
-  "homepage": "https://github.com/baimax159-tech/claude-forge",
-  "repository": "https://github.com/baimax159-tech/claude-forge",
+  "homepage": "https://github.com/baimax159-tech/ai-sdd",
+  "repository": "https://github.com/baimax159-tech/ai-sdd",
   "license": "MIT",
   "keywords": ["sdd", "spec-driven-development", "contract", "skill", "ai-sdd"],
   "commands": ["./commands/help.md"]

@@ -3,7 +3,7 @@
 ## 仓库定位
 
 本仓库是一个 **Claude Code 插件**，托管地址：
-`https://github.com/baizhijian-tech/ai-sdd`
+`https://github.com/baimax159-tech/ai-sdd`
 
 - **插件名称**：`ai-sdd`
 - **功能**：SDD 规格驱动开发，六阶段契约链（P0-P5）

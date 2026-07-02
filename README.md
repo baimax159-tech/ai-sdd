@@ -7,7 +7,7 @@ A Claude Code plugin for SDD (Spec-Driven Development) — six-phase contract ch
 ## Installation
 
 ```bash
-/plugin install https://github.com/baizhijian-tech/ai-sdd
+/plugin install https://github.com/baimax159-tech/ai-sdd
 ```
 
 ## Skills

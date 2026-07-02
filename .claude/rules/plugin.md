@@ -52,8 +52,8 @@
     "name": "Max Bai",
     "email": "baimax159@gmail.com"
   },
-  "homepage": "https://github.com/baimax159-tech/claude-forge",
-  "repository": "https://github.com/baimax159-tech/claude-forge",
+  "homepage": "https://github.com/baimax159-tech/ai-sdd",
+  "repository": "https://github.com/baimax159-tech/ai-sdd",
   "license": "MIT",
   "keywords": ["关键词1", "关键词2"],
   "category": "workflow",

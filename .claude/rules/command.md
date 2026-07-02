@@ -91,7 +91,7 @@ description: 显示 <plugin-name> 插件的所有可用技能和命令
 
 ## 更多信息
 
-- 插件主页：https://github.com/baimax159-tech/claude-forge
+- 插件主页：https://github.com/baimax159-tech/ai-sdd
 ```
 
 ### 模式 2：带参数的命令
