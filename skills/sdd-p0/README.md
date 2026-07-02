@@ -4,7 +4,7 @@ SDD 流程前的开发能力就绪检查。从 Skill、MCP Server、Agent、Hook
 
 ## 触发方式
 
-- 斜杠命令：`/forge-sdd:p0-skill-setup`
+- 斜杠命令：`/ai-sdd:p0-skill-setup`
 - 关键词：说"检查技能"、"准备开发环境"、"进入 P0"、"能力检查"
 
 ## 检查维度

@@ -2,7 +2,7 @@
 name: p4-verification
 description: |
   P4 验证执行引擎：从 P1 构建验证覆盖矩阵，执行验证场景，判定通过/失败，产出 P4 验证契约。
-  当用户说"开始验证"、"进入 P4"或使用 /forge-sdd:p4-verification 时触发。
+  当用户说"开始验证"、"进入 P4"或使用 /ai-sdd:p4-verification 时触发。
 allowed-tools: Read Write Glob Bash AskUserQuestion
 ---
 

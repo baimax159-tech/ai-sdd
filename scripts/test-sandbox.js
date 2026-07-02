@@ -24,7 +24,7 @@ function usage() {
 }
 
 function defaultFixture(skill) {
-  return { 'init-plus': 'java-maven' }[skill] || '';
+  return {}[skill] || '';
 }
 
 function copyDirSync(src, dest) {
@@ -66,7 +66,7 @@ function cmdPrep(args) {
   console.log('');
   console.log('下一步（人工）：');
   console.log(`  1. 进入目录 '${dest}'`);
-  console.log(`  2. 在该目录真实调用 /forge-dev:${skill}，按真实场景回答交互提问`);
+  console.log(`  2. 在该目录真实调用 /ai-sdd:${skill}，按真实场景回答交互提问`);
   console.log(`  3. 回仓库根跑：node scripts/test-sandbox.js check ${skill} '${dest}'`);
 }
 

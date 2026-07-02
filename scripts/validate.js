@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-// 验证整个 marketplace 与各插件的配置合法性
+// 验证插件配置合法性
 // 用法：node scripts/validate.js
 // 依赖：Claude Code CLI（claude 命令可用）
 
@@ -20,23 +20,17 @@ function claudeValidate(target) {
 }
 
 console.log('==========================================');
-console.log(' claude-forge 插件验证');
+console.log(' ai-sdd 插件验证');
 console.log('==========================================\n');
 
-// 1. Marketplace
-console.log('▶ [1/3] 验证 Marketplace 配置...');
-claudeValidate(REPO_ROOT) ? ok('Marketplace 验证通过') : bad('Marketplace 验证失败');
-console.log('');
-
-// 2. Plugin (root is the single plugin)
-console.log('▶ [2/3] 验证插件配置...');
+// 1. Plugin
+console.log('▶ [1/2] 验证插件配置...');
 claudeValidate(REPO_ROOT) ? ok('插件 [ai-sdd] 验证通过') : bad('插件 [ai-sdd] 验证失败');
 console.log('');
 
-// 3. JSON format
-console.log('▶ [3/3] 验证 JSON 文件格式...');
+// 2. JSON format
+console.log('▶ [2/2] 验证 JSON 文件格式...');
 const jsonFiles = [
-  path.join(REPO_ROOT, '.claude-plugin/marketplace.json'),
   path.join(REPO_ROOT, '.claude-plugin/plugin.json'),
 ];
 for (const rel of ['hooks/hooks.json', 'mcp/mcp-config.json']) {

@@ -1,22 +1,22 @@
 ---
 name: help
-description: 显示 forge-sdd 插件的所有可用技能和命令
+description: 显示 ai-sdd 插件的所有可用技能和命令
 ---
 
-# forge-sdd — SDD 规格驱动开发插件
+# ai-sdd — SDD 规格驱动开发插件
 
-> Spec-Driven Development | v3.3.0 | Node.js 18+ | 零外部依赖
+> Spec-Driven Development | v3.4.0 | Node.js 18+ | 零外部依赖
 
 ## 可用技能
 
 | 命令 | 说明 |
 |------|------|
-| `/forge-sdd:p0-skill-setup` | P0 开发能力就绪检查 — 四维度（Skill/MCP/Agent/Hook）覆盖检查与安装 |
-| `/forge-sdd:p1-requirements` | P1 需求获取引擎 — 多轮追问采集需求，生成 P1-req 或 P1p-diff 契约 |
-| `/forge-sdd:p2-architecture` | P2 架构决策引擎 — 覆盖映射、数据模型、接口定义、ADR |
-| `/forge-sdd:p3-implementation` | P3 实现派发引擎 — 可执行 Task 协议 + subagent 编码 + 三闸验证 |
-| `/forge-sdd:p4-verification` | P4 验证执行引擎 — 覆盖矩阵、验证命令、业务可用性验收、回滚预案 |
-| `/forge-sdd:p5-rules` | P5 开发规则沉淀引擎 — 从实现中提炼框架级规则供后续复用 |
+| `/ai-sdd:p0-skill-setup` | P0 开发能力就绪检查 — 四维度（Skill/MCP/Agent/Hook）覆盖检查与安装 |
+| `/ai-sdd:p1-requirements` | P1 需求获取引擎 — 多轮追问采集需求，生成 P1-req 或 P1p-diff 契约 |
+| `/ai-sdd:p2-architecture` | P2 架构决策引擎 — 覆盖映射、数据模型、接口定义、ADR |
+| `/ai-sdd:p3-implementation` | P3 实现派发引擎 — 可执行 Task 协议 + subagent 编码 + 三闸验证 |
+| `/ai-sdd:p4-verification` | P4 验证执行引擎 — 覆盖矩阵、验证命令、业务可用性验收、回滚预案 |
+| `/ai-sdd:p5-rules` | P5 开发规则沉淀引擎 — 从实现中提炼框架级规则供后续复用 |
 
 ## 工作流
 

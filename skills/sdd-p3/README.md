@@ -4,7 +4,7 @@ P3 实现派发引擎：读取 P2 实现单元，生成可执行 Task 协议，�
 
 ## 触发方式
 
-- 斜杠命令：`/forge-sdd:p3-implementation`
+- 斜杠命令：`/ai-sdd:p3-implementation`
 - 关键词：说"开始实现"、"进入 P3"自动触发
 
 ## 功能

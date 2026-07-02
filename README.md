@@ -1,50 +1,39 @@
-﻿# claude-forge
+# ai-sdd
 
-A Claude Code plugin marketplace providing efficient skills and extensions for development workflows.
+A Claude Code plugin for SDD (Spec-Driven Development) — six-phase contract chain (P0-P5).
 
 > ⚠️ Important: Make sure you trust a plugin before installing, updating, or using it.
 
-## Plugins
-
-### Internal Plugins
-
-| Plugin | Description |
-|--------|-------------|
-| **forge-dev** | Development toolkit: project initialization docs generation |
-| **forge-sdd** | SDD spec-driven development plugin — skill-driven six-phase contract chain (P0-P5) + zero-dependency gate |
-
 ## Installation
 
-### Add Marketplace
-
 ```bash
-/plugin marketplace add https://github.com/baimax159-tech/claude-forge
+/plugin install https://github.com/baizhijian-tech/ai-sdd
 ```
 
-### Install Plugin
+## Skills
 
-```bash
-# forge-dev: 开发工具集
-/plugin install forge-dev@claude-forge
-
-# forge-sdd: SDD 规格驱动开发
-/plugin install forge-sdd@claude-forge
-```
+| Skill | Command | Description |
+|-------|---------|-------------|
+| p0-skill-setup | `/ai-sdd:p0-skill-setup` | P0 开发能力就绪检查 |
+| p1-requirements | `/ai-sdd:p1-requirements` | P1 需求获取引擎 |
+| p2-architecture | `/ai-sdd:p2-architecture` | P2 架构决策引擎 |
+| p3-implementation | `/ai-sdd:p3-implementation` | P3 实现派发引擎 |
+| p4-verification | `/ai-sdd:p4-verification` | P4 验证执行引擎 |
+| p5-rules | `/ai-sdd:p5-rules` | P5 开发规则沉淀引擎 |
 
 ## Structure
 
 ```
-claude-forge/
+ai-sdd/
 ├── .claude-plugin/
-│   └── marketplace.json
-├── plugins/
-│   └── forge-dev/
-│       ├── .claude-plugin/
-│       │   └── plugin.json
-│       ├── commands/
-│       ├── skills/
-│       └── README.md
+│   └── plugin.json
+├── skills/
+│   └── sdd-p0/ … sdd-p5/
+├── commands/
+│   └── help.md
 ├── scripts/
+│   ├── sdd.mjs
+│   └── lib/
 └── README.md
 ```
 
@@ -57,4 +46,3 @@ claude-forge/
 ## License
 
 MIT
-

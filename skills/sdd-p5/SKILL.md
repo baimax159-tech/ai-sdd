@@ -2,7 +2,7 @@
 name: p5-rules
 description: |
   P5 开发规则沉淀引擎：全链路完成后，从本次实现中提炼框架级编码规则、架构模式和最佳实践，写入项目规则文件供后续开发复用。
-  当用户说"沉淀规则"、"总结开发规范"、"进入 P5"或使用 /forge-sdd:p5-rules 时触发。
+  当用户说"沉淀规则"、"总结开发规范"、"进入 P5"或使用 /ai-sdd:p5-rules 时触发。
 allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 ---
 

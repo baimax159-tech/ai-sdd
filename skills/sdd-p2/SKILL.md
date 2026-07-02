@@ -2,7 +2,7 @@
 name: p2-architecture
 description: |
   P2 架构决策引擎：消费 P1 需求契约，产出覆盖映射、数据模型、接口定义、实现单元清单和 ADR。
-  当用户说"开始架构设计"、"进入 P2"或使用 /forge-sdd:p2-architecture 时触发。
+  当用户说"开始架构设计"、"进入 P2"或使用 /ai-sdd:p2-architecture 时触发。
 allowed-tools: Read Write Glob Bash AskUserQuestion
 ---
 

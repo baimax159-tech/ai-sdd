@@ -7,7 +7,7 @@
 ## 一、目录与文件规范
 
 ### 必须
-- 在 `plugins/<plugin-name>/skills/` 下创建技能子目录，目录名为技能名（kebab-case）
+- 在 `skills/` 下创建技能子目录，目录名为技能名（kebab-case）
 - 每个技能目录必须包含 `SKILL.md`（技能定义）和 `README.md`（用户文档）
 - `SKILL.md` 使用 YAML frontmatter（`---` 分隔），置于文件最顶部
 - `SKILL.md` 正文不超过 **500 行**

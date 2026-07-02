@@ -2,7 +2,7 @@
 name: p1-requirements
 description: |
   P1 需求获取引擎：通过结构化多轮追问获取完整需求，自动识别新功能/迁移意图，生成 P1-req 或 P1p-diff 契约。
-  当用户说"做 XXX"、"新增功能"、"迁移"、"重构"、"开始 SDD"或使用 /forge-sdd:p1-requirements 时触发。
+  当用户说"做 XXX"、"新增功能"、"迁移"、"重构"、"开始 SDD"或使用 /ai-sdd:p1-requirements 时触发。
 allowed-tools: Read Write Glob Bash AskUserQuestion
 ---
 

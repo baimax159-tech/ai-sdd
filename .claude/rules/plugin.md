@@ -6,11 +6,14 @@
 
 ## 一、目录结构规范
 
-### 标准结构
+### 标准结构（单插件根目录模式）
+
+本仓库采用**单插件根目录**结构：插件即仓库根目录，`marketplace.json` 通过 `source: "."` 引用。
 
 ```
-plugins/<plugin-name>/
+<repo-root>/
 ├── .claude-plugin/
+│   ├── marketplace.json        # Marketplace 入口（source: "." 指向根目录）
 │   └── plugin.json             # 插件元数据（唯一版本管理入口）
 ├── skills/                     # 技能目录（详见 skill.md）
 │   └── <skill-name>/
@@ -23,14 +26,13 @@ plugins/<plugin-name>/
 ```
 
 ### 必须遵守
-- `skills/`、`commands/`、`agents/`、`hooks/`、`mcp/` **必须在插件目录内**，不能放到仓库根目录
-- 每个插件必须有独立的 `.claude-plugin/plugin.json`
-- 多个技能通过命名空间区分，格式：`/<plugin-name>:<skill-name>`（如 `/forge-dev:init-plus`）
+- `skills/`、`commands/`、`agents/`、`hooks/`、`mcp/` 在根目录下，与 `.claude-plugin/` 并列
+- 插件必须有 `.claude-plugin/plugin.json`，与 `marketplace.json` 并列存放
+- 多个技能通过命名空间区分，格式：`/<plugin-name>:<skill-name>`（如 `/ai-sdd:p1-requirements`）
 
 ### 禁止事项
 - **禁止** 将 `skills/`、`commands/` 等组件目录放进 `.claude-plugin/` 目录内
-- **禁止** 在插件中通过 `../` 引用插件目录外的文件（安装时只复制插件目录）
-- **禁止** 在仓库根目录放置 `skills/` 目录
+- **禁止** 跳过验证直接提交
 
 ---
 

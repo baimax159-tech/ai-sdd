@@ -2,7 +2,7 @@
 name: p0-skill-setup
 description: |
   P0 开发能力就绪检查：识别项目技术栈，从 Skill、MCP Server、Agent、Hook 四个维度检查扩展能力覆盖度，分通用/专项两层推荐，自动安装可自动化项、汇总手动项。
-  当用户说"检查技能"、"准备开发环境"、"进入 P0"、"能力检查"或使用 /forge-sdd:p0-skill-setup 时触发。
+  当用户说"检查技能"、"准备开发环境"、"进入 P0"、"能力检查"或使用 /ai-sdd:p0-skill-setup 时触发。
 allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 ---
 

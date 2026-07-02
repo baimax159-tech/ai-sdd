@@ -2,7 +2,7 @@
 name: p3-implementation
 description: |
   P3 实现派发引擎：读取 P2 实现单元，生成可执行 Task 协议，派发 subagent 编码，运行集成验证三闸。
-  当用户说"开始实现"、"进入 P3"或使用 /forge-sdd:p3-implementation 时触发。
+  当用户说"开始实现"、"进入 P3"或使用 /ai-sdd:p3-implementation 时触发。
 allowed-tools: Read Write Glob Bash AskUserQuestion
 ---
 
