@@ -1,22 +1,22 @@
-# p4-verification 技能
+# p4-verification
 
-P4 验证执行引擎：从 P1 构建验证覆盖矩阵，执行验证场景，判定通过/失败，产出 P4 验证契约。
+P4 Verification Engine: builds a verification coverage matrix from P1, executes verification scenarios, determines pass/fail, and produces the P4 verification contract.
 
-## 触发方式
+## Trigger
 
-- 斜杠命令：`/ai-sdd:p4-verification`
-- 关键词：说"开始验证"、"进入 P4"自动触发
+- Slash command: `/ai-sdd:p4-verification`
+- Keywords: "start verification", "enter P4"
 
-## 功能
+## Features
 
-- 加载 P1/P2 验证源（AC/AC-FAIL/NFR/DF）
-- 生成验证覆盖矩阵（条目 → 验证场景 → 验证方式 → 通过判据）
-- subagent 并行执行验证（功能/异常/性能/兼容分组）
-- 结果汇总 + 失败修复 + 全量回归
-- **业务可用性验收**：端到端真实场景验证（Web 服务发真实 HTTP 请求、CLI 跑完整命令序列）
-- gate 校验契约完整性
-- 回滚预案生成
+- Loads P1/P2 verification sources (AC / AC-FAIL / NFR / DF)
+- Generates verification coverage matrix (item → scenario → method → pass criteria)
+- Subagent parallel verification execution (functional / error / performance / compatibility groups)
+- Result aggregation + failure remediation + full regression
+- **Business acceptance**: end-to-end real-scenario verification (HTTP requests for web services, full command sequences for CLI)
+- Gate validates contract completeness
+- Rollback plan generation
 
-## 产物
+## Outputs
 
 - `SDD/contracts/<name>/P4-verify-<name>.md`

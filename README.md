@@ -14,12 +14,18 @@ A Claude Code plugin for SDD (Spec-Driven Development) — six-phase contract ch
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| p0-skill-setup | `/ai-sdd:p0-skill-setup` | P0 开发能力就绪检查 |
-| p1-requirements | `/ai-sdd:p1-requirements` | P1 需求获取引擎 |
-| p2-architecture | `/ai-sdd:p2-architecture` | P2 架构决策引擎 |
-| p3-implementation | `/ai-sdd:p3-implementation` | P3 实现派发引擎 |
-| p4-verification | `/ai-sdd:p4-verification` | P4 验证执行引擎 |
-| p5-rules | `/ai-sdd:p5-rules` | P5 开发规则沉淀引擎 |
+| p0-skill-setup | `/ai-sdd:p0-skill-setup` | P0 readiness check — four-dimension (Skill/MCP/Agent/Hook) coverage |
+| p1-requirements | `/ai-sdd:p1-requirements` | P1 requirements engine — structured elicitation, P1-req / P1p-diff contract |
+| p2-architecture | `/ai-sdd:p2-architecture` | P2 architecture engine — coverage mapping, interface definition, ADR |
+| p3-implementation | `/ai-sdd:p3-implementation` | P3 implementation engine — Task protocol + subagent execution + three-gate |
+| p4-verification | `/ai-sdd:p4-verification` | P4 verification engine — coverage matrix, business acceptance, rollback plan |
+| p5-rules | `/ai-sdd:p5-rules` | P5 rules consolidation — extract framework-level rules for reuse |
+
+## Workflow
+
+```
+P0 Setup → P1 Requirements → P2 Architecture → P3 Implementation → P4 Verification → P5 Rules
+```
 
 ## Structure
 
@@ -39,9 +45,9 @@ ai-sdd/
 
 ## Documentation
 
-开发规则见 `CLAUDE.md` 和 `.claude/rules/` 目录。
+See `CLAUDE.md` and `.claude/rules/` for development guidelines.
 
-测试流程见 `.claude/rules/test.md`。
+See `.claude/rules/test.md` for testing procedures.
 
 ## License
 

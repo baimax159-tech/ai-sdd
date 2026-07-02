@@ -1,21 +1,21 @@
-# p5-rules 技能
+# p5-rules
 
-P5 开发规则沉淀引擎：全链路完成后，从本次实现中提炼框架级编码规则、架构模式和最佳实践，写入项目规则文件供后续开发复用。
+P5 Rules Consolidation Engine: after the full chain completes, extracts framework-level coding rules, architecture patterns, and best practices from the implementation and writes them into project rule files for future reuse.
 
-## 触发方式
+## Trigger
 
-- 斜杠命令：`/ai-sdd:p5-rules`
-- 关键词：说"沉淀规则"、"总结开发规范"、"进入 P5"自动触发
+- Slash command: `/ai-sdd:p5-rules`
+- Keywords: "consolidate rules", "summarize dev standards", "enter P5"
 
-## 功能
+## Features
 
-- 加载 P1→P4 全链路契约和代码产物
-- 从架构模式、编码规范、框架使用、质量保障、踩坑记录五个维度提炼规则
-- 用户逐条 triage（采纳/修改/丢弃）
-- 增量写入项目规则文件（`.claude/rules/` 或 `CLAUDE.md`）
-- 标注规则来源，避免重复
+- Loads full-chain P1→P4 contracts and code artifacts
+- Extracts rules across five dimensions: architecture patterns, coding standards, framework usage, quality assurance, lessons learned
+- User triage per rule (adopt / modify / discard)
+- Incremental write to project rule files (`.claude/rules/` or `CLAUDE.md`)
+- Tags rule sources to avoid duplication
 
-## 产物
+## Outputs
 
-- `.claude/rules/project/dev-rules.md`（或追加到已有规则文件）
-- `SDD/contracts/<name>/P5-rules-<name>.md`（规则沉淀契约）
+- `.claude/rules/project/dev-rules.md` (or appended to existing rule file)
+- `SDD/contracts/<name>/P5-rules-<name>.md` (rules consolidation contract)

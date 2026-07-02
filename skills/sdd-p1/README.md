@@ -1,22 +1,22 @@
-# p1-requirements 技能
+# p1-requirements
 
-P1 需求获取引擎：通过结构化多轮追问获取完整需求，自动识别新功能/迁移意图，生成 P1-req 或 P1p-diff 契约。
+P1 Requirements Engine: collects complete requirements through structured multi-round elicitation, auto-detects intent (new feature vs. migration), and generates a P1-req or P1p-diff contract.
 
-## 触发方式
+## Trigger
 
-- 斜杠命令：`/ai-sdd:p1-requirements`
-- 关键词：说"做 XXX"、"新增功能"、"迁移"、"重构"、"开始 SDD"自动触发
+- Slash command: `/ai-sdd:p1-requirements`
+- Keywords: "build XXX", "add feature", "migrate", "refactor", "start SDD"
 
-## 功能
+## Features
 
-- 自动识别意图（新功能 vs 迁移）
-- 10 元素结构化追问（角色、主流程、分支、异常、并发、兼容、安全、数据模型、NFR、技术约束）
-- subagent 并行场景扩展（边界/安全/并发/兼容）
-- 覆盖自审清单强制检查
-- 迁移路径代码扫描 + 差异确认
-- gate 闸门自动校验契约质量
+- Auto-detects intent (new feature vs. migration)
+- 10-element structured elicitation (role, main flow, branches, exceptions, concurrency, compatibility, security, data model, NFR, tech constraints)
+- Subagent parallel scenario expansion (boundary / security / concurrency / compatibility)
+- Coverage self-review checklist enforcement
+- Migration path code scan + diff confirmation
+- Gate auto-validates contract quality
 
-## 产物
+## Outputs
 
-- `SDD/contracts/<name>/P1-req-<name>.md`（新功能契约）
-- `SDD/contracts/<name>/P1p-diff-<name>.md`（迁移差异契约）
+- `SDD/contracts/<name>/P1-req-<name>.md` (new feature contract)
+- `SDD/contracts/<name>/P1p-diff-<name>.md` (migration diff contract)
