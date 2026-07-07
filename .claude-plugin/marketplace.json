@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "ai-sdd",
+  "owner": {
+    "name": "baimax",
+    "email": "baimax159@gmail.com"
+  },
+  "description": "ai-sdd: a Claude Code plugin marketplace providing efficient skills and extensions for development workflows",
+  "metadata": {},
+  "plugins": [
+    {
+      "name": "ai-sdd",
+      "source": "./plugins/ai-sdd"
+    }
+  ]
+}
