@@ -52,13 +52,21 @@ export function parseContract(text) {
     for (const m of line.matchAll(PLACEHOLDER_RE)) placeholders.push({ line: i + 1, text: m[0] });
   });
 
+  // 取 file:/test: 单元格值：截到 | 或行尾，剥 backtick，逗号分隔取首个路径
+  // 容忍"人类可读"写法如 `types.go`,`config.go`，不再把整串当一个路径误判不存在
+  const artifact = (line, key) => {
+    const m = line.match(new RegExp(`${key}:\\s*(.+?)(?:\\s*\\||\\s+\\w+:|$)`));
+    if (!m) return null;
+    const first = m[1].replace(/`/g, '').split(',')[0].trim();
+    return first || null;
+  };
   const taskMap = new Map();
   for (const line of body.split('\n')) {
     const idm = line.match(/\bTask-(\d+)\b/);
     if (!idm) continue;
     const id = `Task-${idm[1]}`;
-    const file = (line.match(/file:\s*([^\s|]+)/) || [])[1] || null;
-    const test = (line.match(/test:\s*([^\s|]+)/) || [])[1] || null;
+    const file = artifact(line, 'file');
+    const test = artifact(line, 'test');
     const prev = taskMap.get(id) || { id, file: null, test: null };
     taskMap.set(id, { id, file: prev.file || file, test: prev.test || test });
   }

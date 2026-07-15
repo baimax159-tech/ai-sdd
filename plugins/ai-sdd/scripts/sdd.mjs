@@ -44,9 +44,11 @@ try {
     } catch { /* 状态回写失败不影响闸门判定 */ }
     process.exit(r.ok ? 0 : 1);
   } else if (cmd === 'scaffold') {
-    const [phase, name] = args;
-    const { path } = scaffold({ phase, name, contractsDir: join(CONTRACTS_DIR, name), skillsDir: SKILLS_DIR });
-    process.stdout.write(`created: ${path}\n`);
+    const force = args.includes('--force');
+    const [phase, name] = args.filter(a => a !== '--force');
+    const r = scaffold({ phase, name, contractsDir: join(CONTRACTS_DIR, name), skillsDir: SKILLS_DIR, force });
+    if (r.skipped) process.stdout.write(`skipped: ${r.path} 已存在(${r.existingSize} bytes)，未覆盖以防丢失。确需重建加 --force。\n`);
+    else process.stdout.write(`created: ${r.path}\n`);
     process.exit(0);
   } else if (cmd === 'scan-ids') {
     const c = parseContract(readFileSync(args[0], 'utf8'));

@@ -132,8 +132,10 @@ export function runGate({ text, upstream = [] }) {
       const m = l.match(/^\s*[-|]\s*(V-\d+)\s*[:：]\s*(.+?)\s*\|?\s*$/);
       if (!m) continue;
       const val = m[2].replace(/`/g, '').trim();
-      if (val && !/[0-9<>=%]|≤|≥/.test(val)) {
-        violations.push({ family: 'quality', message: `${m[1]} 通过判据非数值化: "${val}"（须含数值/阈值/比较）` });
+      // 等效"通过"表达（全绿/PASS/无失败/fail=0 等）与数值/阈值同等有效，降低措辞摩擦
+      const EQUIV_PASS = /全绿|绿|pass|通过|无失败|无报错|fail\s*[=＝]?\s*0|zero/i;
+      if (val && !/[0-9<>=%]|≤|≥/.test(val) && !EQUIV_PASS.test(val)) {
+        violations.push({ family: 'quality', message: `${m[1]} 通过判据非数值化: "${val}"（须含数值/阈值/比较，或"全绿/PASS/无失败"等等效表达）` });
       }
     }
   }

@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const TEMPLATE_PATH = {
@@ -10,7 +10,7 @@ const TEMPLATE_PATH = {
   P5:  'sdd-p5/template.md',
 };
 
-export function scaffold({ phase, name, contractsDir, skillsDir }) {
+export function scaffold({ phase, name, contractsDir, skillsDir, force = false }) {
   const rel = TEMPLATE_PATH[phase];
   if (!rel) throw new Error(`未知 phase: ${phase}`);
   const raw = readFileSync(join(skillsDir, rel), 'utf8');
@@ -18,6 +18,10 @@ export function scaffold({ phase, name, contractsDir, skillsDir }) {
   const contractId = (content.match(/contract_id:\s*(.*)/) || [])[1].trim();
   mkdirSync(contractsDir, { recursive: true });
   const path = join(contractsDir, `${contractId}.md`);
+  // 目标已存在且明显大于空模板 → 视为已填好的契约，不无提示覆盖（除非 --force）
+  if (!force && existsSync(path) && statSync(path).size > content.length) {
+    return { path, content, skipped: true, existingSize: statSync(path).size };
+  }
   writeFileSync(path, content);
-  return { path, content };
+  return { path, content, skipped: false };
 }

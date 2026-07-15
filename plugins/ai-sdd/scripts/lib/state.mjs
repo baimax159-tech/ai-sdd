@@ -1,6 +1,14 @@
 // scripts/lib/state.mjs — 跨阶段状态持久化（换 session/compact 不丢）
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { execSync } from 'node:child_process';
+
+// 取当前 git HEAD（非 git 仓库或无 git 时返回空，不报错）
+function gitHead() {
+  try {
+    return execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  } catch { return ''; }
+}
 
 export const PHASE_ORDER = ['P1', 'P2', 'P3', 'P4', 'P5'];
 
@@ -56,7 +64,16 @@ export function setState(name, target, key, value, contractsRoot) {
   const v = coerce(value);
   if (t === 'p0') state.p0[key] = v;
   else if (t === 'commands') state.commands[key] = v;
-  else if (PHASE_ORDER.includes(t)) state.phases[t][key] = v;
+  else if (PHASE_ORDER.includes(t)) {
+    state.phases[t][key] = v;
+    // 每次确认落盘时追加一条 {commit, at}，审计可回溯"原始确认版 vs 回补版"
+    if (key === 'confirmed' && v === true) {
+      const entry = { at: new Date().toISOString() };
+      const h = gitHead();
+      if (h) entry.commit = h;
+      (state.phases[t].confirmHistory ??= []).push(entry);
+    }
+  }
   else throw new Error(`未知 target: ${target}（可选 p0 / commands / P1..P5）`);
   saveState(state, contractsRoot);
   return state;
