@@ -8,6 +8,10 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 
 # P5 开发规则沉淀引擎
 
+## 宿主适配
+
+文中的 `${PLUGIN_ROOT}` 指插件根目录：Claude Code 使用 `${CLAUDE_PLUGIN_ROOT}`；Codex 从当前 skill 目录向上定位插件根目录后使用其绝对路径。
+
 ## 触发条件
 
 - P4 全链路已确认完成
@@ -24,9 +28,9 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
    - `codegraph_files` 确认新增/修改文件范围
    - `codegraph_context` 获取实现的整体结构
    - `codegraph_callers`/`codegraph_callees` 确认模块间交互模式
-3. 读取项目现有规则（如 `.claude/rules/`、`CLAUDE.md`），避免重复
+3. 读取项目现有规则（优先 `AGENTS.md`，兼容 `.claude/rules/`、`CLAUDE.md`），避免重复
 
-**上下文聚焦**：全链路契约已加载完毕。本阶段所有判断和产出以上方 P1-P4 契约的明文内容为唯一信息基准，不依赖对话历史中的隐含假设或推断；遇到模糊或信息缺失，以契约文件为准，契约未覆盖的事项用 AskUserQuestion 向用户确认。
+**上下文聚焦**：全链路契约已加载完毕。本阶段所有判断和产出以上方 P1-P4 契约的明文内容为唯一信息基准，不依赖对话历史中的隐含假设或推断；遇到模糊或信息缺失，以契约文件为准，契约未覆盖的事项用宿主原生交互工具向用户确认。
 
 ---
 
@@ -77,7 +81,7 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 
 展示所有候选规则 → 用户逐条 triage：
 
-使用 `AskUserQuestion` 逐组确认：
+使用 `宿主原生交互工具` 逐组确认：
 - **采纳** — 写入项目规则
 - **修改** — 用户调整措辞后采纳
 - **丢弃** — 本次不沉淀（过于特殊 / 不具通用性）
@@ -98,9 +102,10 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 | 项目有 | 写入位置 |
 |---|---|
 | `.claude/rules/project/` 目录 | 在该目录新建或追加规则文件 |
+| `AGENTS.md` | 在适当章节追加跨宿主规则 |
 | `CLAUDE.md` | 在适当章节追加规则 |
-| 两者都有 | 细粒度规则写 `rules/`，概要写 `CLAUDE.md` |
-| 都没有 | 创建 `.claude/rules/project/dev-rules.md` |
+| 多个入口都有 | 细粒度规则写 `rules/`，概要优先写 `AGENTS.md`，必要时同步 `CLAUDE.md` |
+| 都没有 | 创建 `AGENTS.md`，再按用户宿主需要补充 Claude Code 兼容规则 |
 
 ### D-2: 规则文件格式
 
@@ -137,7 +142,7 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 | **重复** | 新旧规则说的是同一件事，措辞不同 | 跳过新规则，保留已有 |
 | **升级** | 新规则是旧规则的精确化/细化版本 | 用新规则替换旧规则，标注 `<!-- upgraded from: ... -->` |
 | **互补** | 两条规则覆盖同一领域的不同侧面 | 合并为一条更完整的规则 |
-| **冲突** | 新旧规则互相矛盾 | 暂停，展示冲突对比，用 `AskUserQuestion` 让用户选择保留哪条或如何调和 |
+| **冲突** | 新旧规则互相矛盾 | 暂停，展示冲突对比，用 `宿主原生交互工具` 让用户选择保留哪条或如何调和 |
 | **独立** | 与已有规则无关 | 正常追加 |
 
 **合并流程**：

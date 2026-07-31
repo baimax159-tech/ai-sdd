@@ -1,0 +1,33 @@
+{
+  "name": "ai-sdd",
+  "version": "1.1.1",
+  "description": "Spec-driven development toolkit with a six-phase contract workflow.",
+  "author": {
+    "name": "baimax",
+    "email": "baimax159@gmail.com"
+  },
+  "homepage": "https://github.com/baimax159-tech/claude-forge",
+  "repository": "https://github.com/baimax159-tech/claude-forge",
+  "license": "MIT",
+  "keywords": [
+    "sdd",
+    "spec-driven-development",
+    "contract",
+    "skill"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Forge SDD",
+    "shortDescription": "Guide work through a six-phase specification contract chain.",
+    "longDescription": "Spec-driven development skills for planning, implementing, and verifying work with explicit phase contracts.",
+    "developerName": "Max Bai",
+    "category": "Productivity",
+    "capabilities": [
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Start a spec-driven development workflow for this feature.",
+      "Run the next Forge SDD phase for the current task."
+    ]
+  }
+}

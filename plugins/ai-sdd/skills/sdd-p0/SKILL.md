@@ -1,18 +1,22 @@
 ---
 name: sdd-p0
 description: |
-  P0 开发能力就绪检查：识别项目技术栈，从 Skill、MCP Server、Agent、Hook 四个维度检查扩展能力覆盖度，分通用/专项两层推荐，自动安装可自动化项、汇总手动项。
+  P0 开发能力就绪检查：识别项目技术栈，从 Skill、MCP Server、Agent、Hook 四个维度检查当前宿主的扩展能力覆盖度，分通用/专项两层推荐，并输出经用户批准后可执行的安装或手动清单。
   当用户说"检查技能"、"准备开发环境"、"进入 P0"、"能力检查"或使用 /ai-sdd:sdd-p0 时触发。
 allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 ---
 
 # P0 开发能力就绪检查
 
-从四个维度检查 Claude Code 扩展能力覆盖度，分通用/专项两层推荐缺失项，能自动安装的直接安装并加载，不能的汇总成安装清单给用户。
+## 宿主适配
+
+文中的 `${PLUGIN_ROOT}` 指插件根目录：Claude Code 使用 `${CLAUDE_PLUGIN_ROOT}`；Codex 从当前 skill 目录向上定位插件根目录后使用其绝对路径。不得假定 Codex 提供 `CLAUDE_PLUGIN_ROOT`。
+
+从四个维度检查当前宿主的扩展能力覆盖度，分通用/专项两层推荐缺失项。只提供可审查的安装建议；外部 Skill、MCP、Hook 或 CLI 安装必须由用户对每个批次明确批准后才执行。
 
 ## 工作流程
 
-识别技术栈 → 通用推荐检查 → 专项推荐检查 → 汇总报告 → 用户确认 → 自动安装 + 手动清单 → 验证
+识别技术栈 → 通用推荐检查 → 专项推荐检查 → 汇总报告 → 用户批准 → 安装或手动清单 → 验证
 
 ---
 
@@ -28,7 +32,7 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 | `requirements.txt`、`pyproject.toml`、`setup.py` | Python |
 | `Cargo.toml` | Rust |
 
-使用 `Glob` 扫描项目根目录下的特征文件。若存在多种语言特征，用 `AskUserQuestion` 让用户确认主语言。
+使用 `Glob` 扫描项目根目录下的特征文件。若存在多种语言特征，用 `宿主原生交互工具` 让用户确认主语言。
 
 ---
 
@@ -38,7 +42,7 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 
 ### 通用 MCP Server
 
-用 `Read` 读取 `${CLAUDE_PLUGIN_ROOT}/skills/sdd-p0/recommendations/mcp-common.md`，加载通用 MCP 推荐清单，逐项检查是否可用。
+用 `Read` 读取 `${PLUGIN_ROOT}/skills/sdd-p0/recommendations/mcp-common.md`，加载通用 MCP 推荐清单，逐项检查是否可用。
 
 ### 通用 Skill
 
@@ -65,7 +69,7 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 
 #### 推荐数据加载
 
-用 `Read` 读取 `${CLAUDE_PLUGIN_ROOT}/skills/sdd-p0/recommendations/<lang>.md`（如 `golang.md`），加载该语言的精选 skill 推荐清单。
+用 `Read` 读取 `${PLUGIN_ROOT}/skills/sdd-p0/recommendations/<lang>.md`（如 `golang.md`），加载该语言的精选 skill 推荐清单。
 
 - 文件存在 → 按清单中的三级分类（必装/推荐/可选）执行按需选择流程
 - 文件不存在 → 退化为 `npx skills find <lang> <dimension>` 通用搜索（按下方通用维度）
@@ -78,7 +82,7 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
    - 必装项缺失 → 强烈建议安装
    - 推荐项适用 → 建议安装
    - 可选项 → 列出供用户自行勾选
-4. 用 `AskUserQuestion` 让用户确认安装范围
+4. 用 `宿主原生交互工具` 让用户确认安装范围
 5. 安装命令使用清单中的安装前缀 + skill 名称
 
 #### 通用搜索（无精选清单时）
@@ -108,7 +112,7 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 
 ### 专项 MCP / Agent
 
-用 `Read` 读取 `${CLAUDE_PLUGIN_ROOT}/skills/sdd-p0/recommendations/mcp-<lang>.md`（如 `mcp-golang.md`），加载语言专属 MCP 推荐清单：
+用 `Read` 读取 `${PLUGIN_ROOT}/skills/sdd-p0/recommendations/mcp-<lang>.md`（如 `mcp-golang.md`），加载语言专属 MCP 推荐清单：
 
 - 文件存在 → 按清单中的适用条件扫描项目依赖（用 `Glob`/`Read` 检查 `go.mod`、`Dockerfile` 等）判断推荐项的适用性
 - 文件不存在 → 跳过专项 MCP 检查
@@ -147,7 +151,7 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 
 ## 步骤 5：用户确认
 
-用 `AskUserQuestion` 提供选项：
+用 `宿主原生交互工具` 提供选项：
 - 自动安装全部"可自动安装"项
 - 选择部分自动安装（列出每项供勾选）
 - 跳过全部
@@ -158,36 +162,38 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 
 ### 自动安装流程
 
+执行任何外部安装前，逐项展示来源、精确命令、版本或 ref（可获得时）、写入位置与网络/权限影响。动态搜索得到的结果只能列为候选，不能自动安装。用户批准一个批次后仍按项目逐个执行，失败立即停止该项并保留其他项不变。
+
 按依赖顺序执行，每项安装后立即验证：
 
 **MCP Server**：
 1. codegraph：先用 `Bash` 执行 `which codegraph` 检查 CLI 是否可用
    - 可用 → 执行 `codegraph init -i`，验证 `.codegraph/` 目录生成
    - 不可用 → 归入手动清单，告知用户先安装 codegraph CLI
-2. context7：用 `Edit` 将配置追加到 `.mcp.json`
-   - ⚠️ MCP 配置写入后需要**重启 session 才生效**，记录到最终提示
+2. context7：先读取当前宿主的 MCP 配置位置和格式；Claude Code 与 Codex 分别按其配置规范增量写入，未知或有冲突时转为手动清单。
+- ⚠️ MCP 配置写入后可能需要新会话或刷新，按当前宿主提示记录到最终说明。
 
 **Skill**（有精选清单时）：
-1. 用 `Bash` 执行 `npx skills add <repo>@<skill-name> -y`（安装命令和 repo 来自推荐清单）
+1. 仅在用户明确批准该来源与命令后，用 `Bash` 执行 `npx skills add <repo>@<skill-name> -y`（安装命令和 repo 来自推荐清单）
 2. 安装后验证：检查命令退出码
 3. 每个选中的 skill 逐一安装
 
 **Skill**（无精选清单时）：
 1. 用 `Bash` 执行 `npx skills find <keyword>` 搜索候选
-2. 从搜索结果中选择匹配项，用 `npx skills add <repo>@<skill-name> -y` 安装
+2. 从搜索结果中展示候选来源；用户选择并批准后才安装，禁止根据搜索排序自动选择。
 
 **Hook**：
-1. 读取 `.claude/settings.json`（不存在则创建空 `{}`）
-2. 用 `Edit` 在 `hooks.PostToolUse` 数组中追加格式化 hook 配置
-3. 配置格式遵循官方 plugin-dev `hook-development` 的 PostToolUse 模式，结构：
+1. 先识别当前宿主。Claude Code 才读取 `.claude/settings.json`；Codex 按其当前官方配置方式处理，不能把 Claude 配置写入 Codex 项目。
+2. 用 `Edit` 在当前宿主的等效 PostToolUse 配置中追加格式化 hook。
+3. Claude Code 配置格式遵循官方 plugin-dev `hook-development` 的 PostToolUse 模式，结构：
    ```json
    {"hooks":{"PostToolUse":[{"matcher":"Edit|Write","hooks":[{"type":"command","command":"gofmt -w $FILEPATH","async":true}]}]}}
    ```
-4. 配置模板按语言替换命令（如 Go 用 `gofmt -w`，Rust 用 `rustfmt`）
+4. 配置模板按语言替换命令（如 Go 用 `gofmt -w`，Rust 用 `rustfmt`）；宿主没有等效 hook 时归入手动清单。
 
 **Agent**：
-1. 来自 plugin 的 → 提示安装对应 plugin
-2. 自定义的 → 在 `.claude/agents/` 生成定义文件模板
+1. 来自 plugin 的 → 提示安装对应 plugin。
+2. Claude Code 的自定义 agent 才生成到 `.claude/agents/`；Codex 将该需求转为 AGENTS.md 指引、skill 或明确提示其当前可用的等效机制。
 
 ### 手动安装清单
 
@@ -225,7 +231,7 @@ pip install black
    - 手动清单 M 项（已输出给用户）
    - 跳过 K 项
 3. 给出下一步建议：
-   - 新安装了 Skill 或 MCP → "请 `/clear` 重启 session 加载新扩展，然后进入 P1"
+  - 新安装了 Skill 或 MCP → 提示按当前宿主新开会话或刷新扩展后再进入 P1，不硬编码 `/clear`。
    - 仅安装了 Hook 或无安装项 → "环境就绪，可直接进入 P1"
 
 ---
@@ -234,7 +240,7 @@ pip install black
 
 | 场景 | 处理方式 |
 |---|---|
-| 无法识别项目语言 | 用 AskUserQuestion 让用户手动选择 |
+| 无法识别项目语言 | 用宿主原生交互工具让用户手动选择 |
 | `npx skills find` 搜索无结果 | 告知该维度暂无可用 skill，归入手动清单 |
 | npx 命令不可用 | 提示用户安装 Node.js，归入手动清单 |
 | codegraph CLI 未安装 | 归入手动清单，附安装指引 |

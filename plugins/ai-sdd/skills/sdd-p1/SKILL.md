@@ -8,6 +8,10 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 # P1 需求获取引擎
 
+## 宿主适配
+
+文中的 `${PLUGIN_ROOT}` 指插件根目录：Claude Code 使用 `${CLAUDE_PLUGIN_ROOT}`；Codex 从当前 skill 目录向上定位插件根目录后使用其绝对路径。文中的 `Skill("...")` 表示调用宿主的技能能力：Claude Code 使用该原生调用，Codex 使用已安装技能的等效调用；若无直接调用能力，则将所需技能规范读入当前上下文后继续。
+
 ## 触发条件
 
 当用户表达以下意图时使用本 skill：
@@ -19,8 +23,8 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 1. 从用户输入判断路径（新功能 or 迁移），告知用户判断结果并确认
 2. 创建契约文件：
-   - 新功能：`node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs scaffold P1 <name>`
-   - 迁移：`node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs scaffold P1p <name>`
+   - 新功能：`node ${PLUGIN_ROOT}/scripts/sdd.mjs scaffold P1 <name>`
+   - 迁移：`node ${PLUGIN_ROOT}/scripts/sdd.mjs scaffold P1p <name>`
 3. **开发能力就绪检查**（若本次 session 已运行过 P0 则跳过此步）：
    - 通过项目特征文件（`go.mod`/`pom.xml`/`package.json` 等）识别主语言
    - 快速检查核心覆盖：
@@ -28,10 +32,10 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
      - **MCP**：codegraph（`codegraph_*` 工具是否可用）、context7（`context7_*` 工具是否可用）
    - 若有明显缺失（Skill 核心维度缺失 ≥2 项，或 codegraph/context7 不可用），向用户提示：
      > "检测到当前项目缺少 N 项开发能力（skill/MCP），可能影响后续阶段质量。建议先运行 P0 完整检查，还是跳过继续？"
-   - 用 `AskUserQuestion` 提供选项：`运行 P0 完整检查` / `跳过，继续 P1`
+   - 用 `宿主原生交互工具` 提供选项：`运行 P0 完整检查` / `跳过，继续 P1`
    - 用户选择运行 P0 → 调用 `Skill("sdd-p0")`，完成后回到 P1 继续
    - 用户选择跳过 → 正常继续
-4. **探测构建/测试/运行命令**：契约创建后运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs detect-commands <name>`，
+4. **探测构建/测试/运行命令**：契约创建后运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs detect-commands <name>`，
    从项目标记文件（`go.mod`/`pom.xml`/`package.json`/`Cargo.toml`/`pyproject.toml` 等）推断 build/test/run 命令并写入 `state.json`。
    这些命令供 P2「验证命令锚点」、P4「验证命令」直接复用，避免各阶段现场猜命令。探测不到的语言留空，由后续阶段人工补。
 
@@ -165,7 +169,7 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 - "哪些要改变？改成什么？" → 差异清单 DF-XX
 - "A 和 B 冲突时怎么处理？" → 合并规则
 - "有新增行为吗？" → 如有，提示后续补 P1-req
-- **验收环境可达性（必问，决定 P4 验证口径）** → 用 `AskUserQuestion` 问"验收时你能提供哪些对照物？①可运行的旧实现（作为逐项对照的 oracle） ②等价的输入/依赖/数据 ③旧实现的真实输入输出样本（录制/日志/快照）"：
+- **验收环境可达性（必问，决定 P4 验证口径）** → 用 `宿主原生交互工具` 问"验收时你能提供哪些对照物？①可运行的旧实现（作为逐项对照的 oracle） ②等价的输入/依赖/数据 ③旧实现的真实输入输出样本（录制/日志/快照）"：
   - 有可运行旧实现 + 等价输入 → 验证口径 = 与旧实现逐项 oracle 对照
   - 只有部分（如仅样本、或仅部分依赖）→ 验证口径 = 已固化样本 golden 比对 + 可达部分对照
   - 都不可达 → 验证口径**降级**为 golden 样本 + 结构/契约级校验，并显式标注"无 oracle，不承诺逐项一致"
@@ -184,9 +188,9 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 1. **生成契约草案** — 按模板填充
 2. **术语识别** — 提取新术语展示给用户确认
 3. **出口自检 loop（≤3 轮）** — 跑闸门，红则按报告修复后重跑：
-   `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/<file>.md`
+   `node ${PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/<file>.md`
 4. **人工确认** — gate 绿后展示契约摘要，停下等用户明确说"进入 P2"/"可以"。不得自动推进。
-   确认后运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs state-set <name> P1 confirmed true` 落盘确认状态（P2 的 can-enter 据此放行）。
+   确认后运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs state-set <name> P1 confirmed true` 落盘确认状态（P2 的 can-enter 据此放行）。
 5. **术语登记** — 确认的新术语追加到 `SDD/glossary.md`
 6. **引导下一步** — "P1 已确认，是否开始 P2 架构设计？"
 
@@ -200,6 +204,6 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 4. **扫描结果必须用户确认** — 不能直接采信
 5. **追问上限 5 轮** — 超出强制收敛
 6. **每轮最多 3 个问题** — 不堆问题轰炸用户
-7. **追问必须选项式交互** — 禁止开放式空问；必须使用平台选项交互能力（Claude Code 用 AskUserQuestion 工具，其他平台用等效选项 UI），禁止在纯文本里列 A/B/C/D 让用户手打
+7. **追问必须选项式交互** — 禁止开放式空问；必须使用宿主原生交互工具或等效选项 UI，禁止在纯文本里列 A/B/C/D 让用户手打
 8. **覆盖自审有空项不得进 gate**
 9. **迁移类必须问验收环境可达性** — Step 4 必须确认用户能提供的验收环境，据此定 P4 验证口径，禁止挂无法验证的一致性承诺

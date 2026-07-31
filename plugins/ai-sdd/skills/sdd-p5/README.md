@@ -12,10 +12,10 @@ P5 开发规则沉淀引擎：全链路完成后，从本次实现中提炼框�
 - 加载 P1→P4 全链路契约和代码产物
 - 从架构模式、编码规范、框架使用、质量保障、踩坑记录五个维度提炼规则
 - 用户逐条 triage（采纳/修改/丢弃）
-- 增量写入项目规则文件（`.claude/rules/` 或 `CLAUDE.md`）
+- 增量写入项目规则文件（优先 `AGENTS.md`，兼容 `.claude/rules/` 或 `CLAUDE.md`）
 - 标注规则来源，避免重复
 
 ## 产物
 
-- `.claude/rules/project/dev-rules.md`（或追加到已有规则文件）
+- `AGENTS.md`（或按既有项目规则结构追加）
 - `SDD/contracts/<name>/P5-rules-<name>.md`（规则沉淀契约）

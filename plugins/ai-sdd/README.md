@@ -12,7 +12,7 @@ Skill 驱动的六阶段契约链开发插件。P0 能力就绪 → P1 需求 �
 
 ## 使用方式
 
-安装为 Claude Code 插件后，由 skill 驱动 P0-P5 工作流：
+安装后由 skill 驱动 P0-P5 工作流；Claude Code 可使用下列命令入口，Codex 可直接用自然语言触发相同阶段：
 
 | 阶段 | 触发方式 | 说明 |
 |------|----------|------|
@@ -34,10 +34,12 @@ Skill 驱动的六阶段契约链开发插件。P0 能力就绪 → P1 需求 �
 
 ## CLI 工具
 
+`PLUGIN_ROOT` 表示插件根目录：Claude Code 可设为 `$CLAUDE_PLUGIN_ROOT`；Codex 使用当前已安装插件的实际根路径。
+
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<file>.md          # 契约校验
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs scaffold <P1|P1p|P2|P3|P4|P5> <name> # 生成空契约（已存在且非空则跳过，加 --force 强制覆盖）
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs verify-artifacts SDD/contracts/P3-impl-<name>.md  # 产物存在闸
+node ${PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<file>.md          # 契约校验
+node ${PLUGIN_ROOT}/scripts/sdd.mjs scaffold <P1|P1p|P2|P3|P4|P5> <name> # 生成空契约（已存在且非空则跳过，加 --force 强制覆盖）
+node ${PLUGIN_ROOT}/scripts/sdd.mjs verify-artifacts SDD/contracts/P3-impl-<name>.md  # 产物存在闸
 ```
 
 ## 目录结构

@@ -28,13 +28,15 @@ P0 技能准备 → P1 需求 → P2 架构 → P3 实现 → P4 验证 → P5 �
 
 ## CLI 工具
 
+`PLUGIN_ROOT` 表示插件根目录：Claude Code 可设为 `$CLAUDE_PLUGIN_ROOT`；Codex 使用当前已安装插件的实际根路径。
+
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs scaffold <P1|P1p|P2|P3|P4|P5> <name>  # 生成空契约
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/<file>.md    # 契约校验
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs verify-artifacts SDD/contracts/<name>/P3-impl-<name>.md  # 产物存在闸
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs scan-ids <file>.md                     # 扫描 ID
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs trace-extract <file>.md                # 提取追溯
-node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs placeholder-scan <file>.md             # 占位符检查
+node ${PLUGIN_ROOT}/scripts/sdd.mjs scaffold <P1|P1p|P2|P3|P4|P5> <name>  # 生成空契约
+node ${PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/<file>.md    # 契约校验
+node ${PLUGIN_ROOT}/scripts/sdd.mjs verify-artifacts SDD/contracts/<name>/P3-impl-<name>.md  # 产物存在闸
+node ${PLUGIN_ROOT}/scripts/sdd.mjs scan-ids <file>.md                     # 扫描 ID
+node ${PLUGIN_ROOT}/scripts/sdd.mjs trace-extract <file>.md                # 提取追溯
+node ${PLUGIN_ROOT}/scripts/sdd.mjs placeholder-scan <file>.md             # 占位符检查
 ```
 
 ## 更多信息

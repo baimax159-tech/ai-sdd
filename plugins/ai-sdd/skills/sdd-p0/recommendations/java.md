@@ -2,9 +2,9 @@
 
 精选源：[jabrena/plinth（cursor-rules-java）](https://github.com/jabrena/plinth)（413★，MIT，116 skill，CI + 5 家安全扫描器校验，活跃维护）
 
-安装命令：`npx skills add jabrena/cursor-rules-java --skill <skill-name> --agent claude-code -y`
+安装命令：`npx skills add jabrena/cursor-rules-java --skill <skill-name> --agent <host-agent> -y`
 
-> ⚠️ 安装语法与 Go 源不同：plinth 用 `--skill <name> --agent claude-code`，非 `@<name>`。
+> ⚠️ 安装语法与 Go 源不同：plinth 用 `--skill <name> --agent <host-agent>`，非 `@<name>`。`<host-agent>` 按当前宿主选择（Claude Code 为 `claude-code`；Codex 使用其支持的 agent 标识，未知时转为手动安装项）。
 > ⚠️ plinth 另含 planning/architecture/agile/compliance 类 skill（`0XX`、`8XX`），因职责与 ai-sdd 的 P1/P2 阶段重叠，**本清单不收录**，避免与 SDD 流程冲突。
 
 ---

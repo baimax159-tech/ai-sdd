@@ -8,15 +8,19 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 # P3 实现派发引擎
 
+## 宿主适配
+
+文中的 `${PLUGIN_ROOT}` 指插件根目录：Claude Code 使用 `${CLAUDE_PLUGIN_ROOT}`；Codex 从当前 skill 目录向上定位插件根目录后使用其绝对路径。文中的 `Skill("...")` 表示调用宿主的技能能力：Claude Code 使用该原生调用，Codex 使用已安装技能的等效调用；若无直接调用能力，则将所需技能规范读入当前上下文或子 agent prompt。
+
 ## 触发条件
 
 - P2 已经用户确认
-- 用 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs scaffold P3 <name>` 生成 P3 契约
+- 用 `node ${PLUGIN_ROOT}/scripts/sdd.mjs scaffold P3 <name>` 生成 P3 契约
 - 用户确认开始实现
 
 ## Phase A: 加载执行上下文
 
-0. **前置硬闸**：运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs can-enter <name> P3`。
+0. **前置硬闸**：运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs can-enter <name> P3`。
    非 0 退出（P2 gate 未绿或未经用户确认）则拒绝进入，提示用户先完成并确认 P2，不得继续。
 1. 读取 P2 契约的完整内容：
    - 接口签名（方法名、参数、返回值）
@@ -30,10 +34,10 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
    - 遍历 system-reminder 中所有 available skills 的名称和 description
    - 结合 P2 契约已确定的技术栈（语言、框架），判断每个 skill 是否与当前项目的编码实现相关
    - **判断依据**：skill 的 description 涉及编码规范、测试、错误处理、安全、性能、并发等实现层面的内容，且与当前项目技术栈匹配
-   - 将筛选出的 skill 名称记录为 **subagent 强制触发清单**，在 Phase D 的 subagent prompt 中以明确的 `Skill` 工具调用指令传递
+   - 将筛选出的 skill 名称记录为 **subagent 规范清单**，在 Phase D 以宿主可执行的 skill 调用或规范内联方式传递
 4. 确认每个 P2 IU 都在执行计划中有对应 Task
 
-**上下文聚焦**：契约文件已加载完毕。本阶段所有判断和产出以上方契约文件的明文内容为唯一信息基准，不依赖对话历史中的隐含假设或推断。遇到模糊或信息缺失，以契约文件为准；契约未覆盖的事项用 AskUserQuestion 向用户确认。
+**上下文聚焦**：契约文件已加载完毕。本阶段所有判断和产出以上方契约文件的明文内容为唯一信息基准，不依赖对话历史中的隐含假设或推断。遇到模糊或信息缺失，以契约文件为准；契约未覆盖的事项用宿主原生交互工具向用户确认。
 
 ---
 
@@ -48,7 +52,7 @@ P2 的「现有架构评估」常只在结构/接口/技术栈层面判断"匹�
 2. 对 P1p-diff 行为一致性白名单冻结的**每个 I/O 字段**，沿这些层逐层追踪：每一经过的层是否都有对应承载点（有定义、有读写、转换映射有覆盖），任一层断链即为缺口。
 3. 用 CodeGraph（`codegraph_search`/`codegraph_node`）定位字段在各层的落点，缺 CodeGraph 时退化为 `Grep`/`Read`。
 4. 把所有断链项汇总为**框架缺口清单**（字段 → 在哪一层断链 → 建议补法）。
-5. 用 `AskUserQuestion` 一次性**批量**报清单请用户审批（**禁止逐条打断**）→ 批准后在 Phase D 一并实施 + 回补 P2/P3 契约。
+5. 用 `宿主原生交互工具` 一次性**批量**报清单请用户审批（**禁止逐条打断**）→ 批准后在 Phase D 一并实施 + 回补 P2/P3 契约。
 6. 清单为空 → 记录「字段承载预检通过」，进入 Phase B0。
 
 ---
@@ -71,7 +75,7 @@ P2 的「现有架构评估」常只在结构/接口/技术栈层面判断"匹�
    - 当出现新工作类型时，定义新分类 + 新 prompt 框架
    - 不修改已有分类的 prompt 结构，保持已有 agent 设计的稳定性
 
-用 `AskUserQuestion` 展示分类方案 → 用户确认 → 进入 Phase B 按分类生成具体 Task 协议
+用 `宿主原生交互工具` 展示分类方案 → 用户确认 → 进入 Phase B 按分类生成具体 Task 协议
 
 ---
 
@@ -159,12 +163,15 @@ P2 的「现有架构评估」常只在结构/接口/技术栈层面判断"匹�
 展示 Stage 编排 → 用户确认 → 建议用户开启自动模式 → 进入派发。
 
 > **自动模式引导**：Stage 编排确认后，向用户提示：
-> "实现阶段（派发 → 验证 → 复核）将自动执行，预计耗时较长。建议开启自动接受模式（Shift+Tab 切换权限模式到 Auto-accept）让我持续工作，完成后我会停下等你确认。"
-> 用户开启自动接受后，Phase D → E → F 连续执行不中断，直到 Phase G 停下等用户确认。
+> "实现阶段（派发 → 验证 → 复核）预计耗时较长。若当前宿主支持自动执行或后台 agent，可在用户明确授权后使用；否则按宿主的确认与并行能力逐步执行，Phase G 前始终停下等待确认。"
 
 ---
 
 ## Phase D: 派发 subagent 执行
+
+### 能力预检
+
+先确认当前宿主是否可派发 subagent、是否支持并行、以及子 agent 是否可读取所需 skill。能力不足时允许退化为单 agent 或串行执行，并在契约中记录原因；正确性、文件隔离和验证要求不变。
 
 ### subagent 上下文
 
@@ -175,7 +182,7 @@ P2 的「现有架构评估」常只在结构/接口/技术栈层面判断"匹�
 
 ### subagent prompt 中的 skill 触发模板
 
-subagent prompt **必须**包含如下格式的明确指令（skill 名称由 Phase A 步骤 3 筛选结果决定，按项目实际技术栈填入）：
+subagent prompt 必须包含可执行的规范来源（skill 名称由 Phase A 步骤 3 筛选结果决定，按项目实际技术栈填入）。Claude Code 可使用下列原生调用；Codex 或受限环境则把已读取的规范正文内联到 prompt：
 
 ```
 在开始实现之前，你必须依次调用以下 Skill：
@@ -189,21 +196,17 @@ Skill 返回的规范是你的实现约束，优先级高于下方默认流程�
 
 > **为什么必须这样写**：subagent 运行在独立上下文中，不继承主 session 的 skill 记忆。
 > 仅写"遵守编码规范"无效——subagent 不知道有哪些 skill 可用，也不会主动调用。
-> 必须在 prompt 中给出具体 skill 名称 + 明确的 `Skill("xxx")` 调用指令。
+> 必须在 prompt 中给出具体 skill 名称，并按宿主能力使用原生调用或规范内联。
 
-### 并行派发下的 skill 调用（关键：并行与 skill 调用可同时成立）
+### 并行派发与技能规范
 
-派发的 subagent **默认继承主 session 的工具集，其中包含 Skill 工具**。因此：
+- 文件无交叉、无依赖且宿主支持并行时可并行派发。
+- 子 agent 可直接调用 skill 时，显式给出 skill 名称；不能调用时，主 agent 预取规范正文并内联到 prompt。
+- 宿主不支持并行、无法安全共享工作区或任务需要人工确认时，改为串行或单 agent；在契约中记录退化原因。
 
-- **并行组里的每个 subagent 都能独立调用 `Skill("xxx")`**——skill 调用不需要牺牲并行。
-- 并行 = **在同一条消息里发出多个 Agent 调用**（不是发一个等一个再发下一个）。同批派发的每个 subagent 各自在自己的上下文里调 Skill 工具、拉取规范、执行。
-- **前提**：主 session 的可用工具集必须同时包含 `Agent`（派发）与 `Skill`（供 subagent 调用）；给 subagent 显式指定 `tools` 时必须含 `Skill`，或直接省略 `tools` 让它继承全部。
+### 兜底：子 agent 无法直接调用 skill 时
 
-> **严禁把"能否调 Skill"当作串行化理由**：执行形态（并行/串行）只由 Phase C 的判据决定——**文件交叉 + 依赖关系**，二者皆无即可并行。"担心 subagent 调不了 skill"不是退化成串行的正当理由；正确做法是确保工具集授予到位，而非放弃并行。
-
-### 兜底：环境确实禁用 Skill 工具时
-
-仅当某环境确认 subagent 无法调用 Skill 工具（极端受限环境）时，采用**规范预取内联**，而**不是**改串行：
+当子 agent 无法直接调用 skill 时，主 agent 可采用**规范预取内联**；是否并行仍由能力预检、工作区隔离和依赖关系决定：
 
 1. 主 agent 在派发前对每个强制 skill 调一次 `Skill("xxx")`，取回规范正文。
 2. 把规范正文作为 prompt 的一部分，**内联下发**给同批并行的每个 subagent（subagent 直接读 prompt 内规范，无需自己调工具）。
@@ -213,7 +216,7 @@ Skill 返回的规范是你的实现约束，优先级高于下方默认流程�
 ### subagent 执行流程
 
 ```
-1. 按 prompt 指令依次调用 Skill 工具，加载所有强制 skill 的规范内容
+1. 按 prompt 指令调用可用 skill，或读取内联的规范内容
 2. 按 skill 规范 + Task 协议执行（skill 规范优先级高于下方默认流程）
 3. 若无相关 skill 或 skill 未覆盖，执行默认流程：
    a. 阅读 Task 协议的 P2 接口约束
@@ -233,7 +236,7 @@ Skill 返回的规范是你的实现约束，优先级高于下方默认流程�
 | 文件隔离 | 只能修改本 Task 声明的目标文件 |
 | 接口锁定 | P2 签名不可变，发现需改必须暂停上报 |
 | 测试先行 | 先写测试再实现，禁止跳过 |
-| 编码规范 | 必须通过 Skill 工具触发已安装的编码/TDD skill，不可仅口头遵守 |
+| 编码规范 | 必须加载已安装 skill 的规范；Claude Code 可原生调用，其他宿主可预取并内联，不可仅口头声称遵守 |
 | 注释完善 | 公开方法必须有头部注释；复杂逻辑块必须有行内注释；只写 WHY 不写 WHAT |
 | 独立验证 | 完成后运行 build + test |
 
@@ -255,16 +258,16 @@ Skill 返回的规范是你的实现约束，优先级高于下方默认流程�
 
 ### 无法并行时
 
-必须说明退化原因，且退化理由**只能是文件交叉或依赖关系**。"subagent 可能调不了 skill / 环境受限"不是合法退化理由——遇到时按上方"兜底：环境确实禁用 Skill 工具时"处理，保留并行。
+必须说明退化原因。文件交叉、依赖关系、宿主不支持并行、工作区隔离限制、缺少可调用 skill 或需要人工确认都可以导致串行；不得以速度为理由跳过验证。
 
 ---
 
 ## Phase E: 集成验证（三闸，缺一不可）
 
-1. **产物存在闸**：`node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs verify-artifacts SDD/contracts/<name>/P3-impl-<name>.md`
+1. **产物存在闸**：`node ${PLUGIN_ROOT}/scripts/sdd.mjs verify-artifacts SDD/contracts/<name>/P3-impl-<name>.md`
    每个 Task 声明的 file:/test: 必须真实存在且非空，红则补齐缺失文件后重跑。
 2. **产物正确闸**：跑项目级测试命令（根据 P2 技术栈确定，如 Go: `go test ./...`、Java: `mvn test`、Node: `npm test`、Python: `pytest`），失败则修实现。
-3. **契约闸**：`node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/P3-impl-<name>.md`
+3. **契约闸**：`node ${PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/P3-impl-<name>.md`
    校验 P2 每个 IU 都被 Task 覆盖 + 每 Task 字段完整。
 
 ---
@@ -286,7 +289,7 @@ Skill 返回的规范是你的实现约束，优先级高于下方默认流程�
 三闸全绿 + P2 一致性复核通过后展示实现摘要（新增/修改文件数、测试结果、构建状态、P2 一致性状态、**进度清单勾选情况**），等用户明确确认"进入 P4"。不得自动推进。
 
 **进度清单必须全部 `[x]`**：若"实现进度"清单仍有 `[ ]`，说明有 Task 未真正完成，不得展示摘要请求确认，先补齐并勾选。
-用户确认后运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs state-set <name> P3 confirmed true` 落盘确认状态（P4 的 can-enter 据此放行）。
+用户确认后运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs state-set <name> P3 confirmed true` 落盘确认状态（P4 的 can-enter 据此放行）。
 
 ---
 
@@ -300,7 +303,7 @@ Skill 返回的规范是你的实现约束，优先级高于下方默认流程�
 6. **集成验证必须全量** — 不能只跑被改文件的测试
 7. **P3 必须 100% 覆盖 P2 所有 IU，gate coverage 红绝不可绕过**
 8. **代码必须与 P2 完全一致** — 函数签名、数据模型、ADR 决策不可偏离
-9. **必须通过 Skill 工具触发已安装 skill，且不得因此牺牲并行** — subagent prompt 必须含明确的 Skill 工具调用指令；subagent 默认继承主 session 的 Skill 工具，并行组内每个 subagent 都能独立调用。执行形态只由文件交叉+依赖决定，"能否调 skill"绝不作为串行化理由；环境确实禁用 Skill 工具时改用规范预取内联，仍保留并行
+9. **必须加载已安装 skill 的规范** — Claude Code 可用明确的 Skill 工具调用；其他宿主可预取并内联。并行仅在宿主能力、工作区隔离和依赖关系均允许时使用，不能为追求并行牺牲正确性
 10. **关键逻辑必须有注释** — 公开方法有头部注释；复杂逻辑块有行内注释；只写 WHY，禁止废话注释（如 "// 返回结果"）
 11. **迁移类必须先过字段覆盖预检** — P1p-diff 类项目在 Phase D 派发前必须完成 Phase A2-bis，框架缺口清单未经用户批准不得派发
 12. **每个 Task 必须带可勾选状态并如实勾选** — 规划时每个 Task 初始化为 `[ ]`（含顶部"实现进度"清单）；Task 通过验证后由主 agent 置 `[x]`，subagent 不碰契约；进度清单未全部 `[x]` 不得进入 Phase G 请求确认

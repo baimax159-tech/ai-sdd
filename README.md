@@ -1,21 +1,26 @@
 # ai-sdd
 
-> ai-sdd: a Claude Code plugin marketplace providing efficient skills and extensions for development workflows
+> ai-sdd: a multi-agent plugin marketplace providing skills and extensions for development workflows
 
-> ⚠️ 本仓库由上游 `claude-forge` 自动生成并同步的**只读镜像**，请勿直接修改；如需变更请在上游仓库改动后重新发布。
+> ⚠️ 本仓库由上游 `agent-forge` 自动生成并同步的**只读镜像**，请勿直接修改；如需变更请在上游仓库改动后重新发布。
 
 ## 安装
 
-### 添加 Marketplace
+### Claude Code
 
 ```bash
 /plugin marketplace add https://github.com/baimax159-tech/ai-sdd
 ```
 
-### 安装插件
-
 ```bash
 /plugin install ai-sdd@ai-sdd
+```
+
+### Codex
+
+```bash
+codex plugin marketplace add https://github.com/baimax159-tech/ai-sdd --sparse .agents/plugins
+codex plugin install ai-sdd@ai-sdd
 ```
 
 ## 插件与技能

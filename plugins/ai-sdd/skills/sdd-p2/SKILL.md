@@ -8,15 +8,19 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 # P2 架构决策引擎
 
+## 宿主适配
+
+文中的 `${PLUGIN_ROOT}` 指插件根目录：Claude Code 使用 `${CLAUDE_PLUGIN_ROOT}`；Codex 从当前 skill 目录向上定位插件根目录后使用其绝对路径。
+
 ## 触发条件
 
 - P1 契约已确认（gate 绿 + 用户确认）
 - 用户确认开始架构设计
-- 或直接运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs scaffold P2 <name>` 后进入本 skill
+- 或直接运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs scaffold P2 <name>` 后进入本 skill
 
 ## Phase A: 加载上游
 
-0. **前置硬闸**：运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs can-enter <name> P2`。
+0. **前置硬闸**：运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs can-enter <name> P2`。
    非 0 退出（P1 gate 未绿或未经用户确认）则拒绝进入，提示用户先完成并确认 P1，不得继续。
 1. 读取已确认的 P1-req 或 P1p-diff 契约
 2. 提取所有关键条目：
@@ -34,7 +38,7 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
    - `codegraph_context`（描述需求关键词）获取相关入口点和符号
    - 仅 CodeGraph 不可用时退化为 Glob + Read
 
-**上下文聚焦**：契约文件已加载完毕。本阶段所有判断和产出以上方契约文件的明文内容为唯一信息基准，不依赖对话历史中的隐含假设或推断。遇到模糊或信息缺失，以契约文件为准；契约未覆盖的事项用 AskUserQuestion 向用户确认。
+**上下文聚焦**：契约文件已加载完毕。本阶段所有判断和产出以上方契约文件的明文内容为唯一信息基准，不依赖对话历史中的隐含假设或推断。遇到模糊或信息缺失，以契约文件为准；契约未覆盖的事项用宿主原生交互工具向用户确认。
 
 ---
 
@@ -128,7 +132,7 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 ### C-5: 验证命令锚点
 
-读取 P1 探测的命令：`node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs state-show <name>` 的 `commands` 字段（build/test/run）。
+读取 P1 探测的命令：`node ${PLUGIN_ROOT}/scripts/sdd.mjs state-show <name>` 的 `commands` 字段（build/test/run）。
 填入契约「验证命令锚点」表的对应行。探测为空的命令必须在此补全为可执行命令——
 gate 会校验 `test` 行非空且非占位（`-`/`无`/`TBD` 等一律判红）。这些锚点是 P3 集成验证、P4 验证命令的唯一命令来源，下游不再现场猜。
 
@@ -207,9 +211,9 @@ gate 会校验 `test` 行非空且非占位（`-`/`无`/`TBD` 等一律判红）
 
 ## Phase G: 门控与确认
 
-1. **出口自检 loop（≤3 轮）**: `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/P2-arch-<name>.md`
+1. **出口自检 loop（≤3 轮）**: `node ${PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/P2-arch-<name>.md`
    gate 双向校验：① 每个 IU 的 covers 命中真实 P1 ID；② **正向覆盖——P1 每个 AC/AC-FAIL/NFR/DF 必须被某 IU 覆盖，缺一即红**。红则补 IU/追溯后重跑，直到 P2 对 P1 零缺失全覆盖。
-2. **人工确认** → 用户说"进入 P3"；确认后运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs state-set <name> P2 confirmed true` 落盘确认状态（P3 的 can-enter 据此放行）。
+2. **人工确认** → 用户说"进入 P3"；确认后运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs state-set <name> P2 confirmed true` 落盘确认状态（P3 的 can-enter 据此放行）。
 3. **进入 P3**: 引导用户用 sdd-p3 skill；P3 契约由该 skill 用 `scaffold P3 <name>` 生成，不再用 dispatch。
 
 ---
@@ -222,5 +226,5 @@ gate 会校验 `test` 行非空且非占位（`-`/`无`/`TBD` 等一律判红）
 4. **不得自动推进** — gate 未绿不得请求用户确认
 5. **Q 影响架构时必须暂停** — 不得带假设继续设计
 6. **P2 必须 100% 覆盖 P1，gate coverage 红绝不可绕过**
-7. **分步确认、分步落盘** — Phase C 每个子步骤（数据模型、接口、模块层划分、ADR、实现单元）必须逐步展示并用平台选项交互（Claude Code 用 AskUserQuestion）获得用户确认后，再写入契约文件。禁止一次性输出全部架构内容。
+7. **分步确认、分步落盘** — Phase C 每个子步骤（数据模型、接口、模块层划分、ADR、实现单元）必须逐步展示并用宿主原生交互工具获得用户确认后，再写入契约文件。禁止一次性输出全部架构内容。
 8. **架构内容只落契约文件** — 数据模型、接口签名、模块划分等架构产物必须写入 P2 契约 markdown，不得仅在对话中展示代码块而不落盘

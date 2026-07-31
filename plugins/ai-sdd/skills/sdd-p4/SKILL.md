@@ -8,6 +8,10 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 # P4 验证执行引擎
 
+## 宿主适配
+
+文中的 `${PLUGIN_ROOT}` 指插件根目录：Claude Code 使用 `${CLAUDE_PLUGIN_ROOT}`；Codex 从当前 skill 目录向上定位插件根目录后使用其绝对路径。
+
 ## 触发条件
 
 - P3 已确认（三闸全绿 + 用户确认）
@@ -15,14 +19,14 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 ## Phase A: 加载验证源
 
-0. **前置硬闸**：运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs can-enter <name> P4`。
+0. **前置硬闸**：运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs can-enter <name> P4`。
    非 0 退出（P3 gate 未绿或未经用户确认）则拒绝进入，提示用户先完成并确认 P3，不得继续。
 1. 从 P1-req 提取：AC、AC-FAIL、NFR
 2. 或从 P1p-diff 提取：DF 差异项、行为一致性声明
 3. 从 P2 提取：可验证架构约束、验证命令
 4. 确认范围："本次验证覆盖以下条目，有遗漏吗？"
 
-**上下文聚焦**：验证源已加载完毕。本阶段所有判断和产出以上方 P1/P2/P3 契约的明文内容为唯一信息基准，不依赖对话历史中的隐含假设或推断；遇到模糊或信息缺失，以契约文件为准，契约未覆盖的事项用 AskUserQuestion 向用户确认。
+**上下文聚焦**：验证源已加载完毕。本阶段所有判断和产出以上方 P1/P2/P3 契约的明文内容为唯一信息基准，不依赖对话历史中的隐含假设或推断；遇到模糊或信息缺失，以契约文件为准，契约未覆盖的事项用宿主原生交互工具向用户确认。
 
 ---
 
@@ -87,7 +91,7 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 ### E-1: 确定服务类型与验收策略
 
-使用 `AskUserQuestion` 确认项目类型：
+使用 `宿主原生交互工具` 确认项目类型：
 
 | 项目类型 | 验收策略 |
 |---|---|
@@ -129,6 +133,8 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 ### E-3: 执行端到端验收
 
+先确认项目类型、目标环境、测试数据和执行授权。只有明确隔离且获准的环境才能启动服务或发送真实请求；生产、共享或含敏感数据环境默认不执行写操作。库、CLI、前端和离线任务按其真实入口设计验收，不强行套用 HTTP。
+
 **Web 服务**：
 1. 启动服务（`Bash` 执行项目的启动命令，如 `go run`、`mvn spring-boot:run`、`npm start`）
 2. 等待服务就绪（轮询健康检查端点或端口）
@@ -145,7 +151,7 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 **无法自动验收时**（如依赖外部服务、需要 UI 操作）：
 - 生成可执行的验收脚本交付用户
 - 明确标注"需人工执行"并列出操作步骤
-- 用 `AskUserQuestion` 让用户确认执行结果
+- 用 `宿主原生交互工具` 让用户确认执行结果
 
 ### E-4: 可用性缺陷修复
 
@@ -165,7 +171,7 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
 
 1. 展示验证覆盖矩阵（全绿）
 2. 展示业务可用性验收结果（全绿）
-3. 运行契约闸：`node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/P4-verify-<name>.md`
+3. 运行契约闸：`node ${PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<name>/P4-verify-<name>.md`
 4. 展示最终摘要：
    ```
    "P4 验证完成:
@@ -177,7 +183,7 @@ allowed-tools: Read Write Glob Bash AskUserQuestion
     - gate: pass"
    ```
 5. gate 绿后展示摘要，停下等用户确认。
-6. 等用户确认后运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/sdd.mjs state-set <name> P4 confirmed true` 落盘确认状态，再引导进入 P5。不得自动推进。
+6. 等用户确认后运行 `node ${PLUGIN_ROOT}/scripts/sdd.mjs state-set <name> P4 confirmed true` 落盘确认状态，再引导进入 P5。不得自动推进。
 7. **引导下一步**："P4 验证通过，是否进入 P5 沉淀开发规则？（推荐：将本次实现经验转化为项目规则，提升后续开发质量）"
 
 ---
@@ -197,10 +203,10 @@ P4 契约必须包含回滚预案：
 
 1. **每条 AC/DF 必须有验证场景** — 不得遗漏
 2. **通过判据必须数值化** — "运行正常"不算通过判据
-3. **验证命令必须可执行** — 不接受"人工检查"
+3. **验证命令必须可执行**；确实无法自动化的 UI/外部依赖场景允许人工验收，但必须记录步骤、证据与执行人确认
 4. **失败修复后必须全量回归** — 不能只重跑失败项
 5. **不得自动推进** — gate 未绿不得请求用户确认
 6. **回滚预案不可为空** — 必须有具体步骤
 7. **业务可用性验收不可跳过** — 单元测试全绿不等于业务可用，必须执行端到端场景验证
-8. **端到端场景必须用真实请求** — 禁止用 mock/stub 替代真实服务调用；无法自动化时必须生成脚本并标注"需人工执行"
+8. **端到端场景按风险分层** — 隔离环境优先真实调用；单元与集成层可使用 mock/stub；无法自动化时必须生成脚本并标注"需人工执行"
 9. **可用性修复后必须双重回归** — 单元测试 + 端到端场景全部重跑

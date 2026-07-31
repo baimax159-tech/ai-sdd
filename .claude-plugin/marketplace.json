@@ -5,7 +5,7 @@
     "name": "baimax",
     "email": "baimax159@gmail.com"
   },
-  "description": "ai-sdd: a Claude Code plugin marketplace providing efficient skills and extensions for development workflows",
+  "description": "ai-sdd: a multi-agent plugin marketplace providing skills and extensions for development workflows",
   "metadata": {},
   "plugins": [
     {

@@ -1,14 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "ai-sdd",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "SDD spec-driven development plugin — skill-driven six-phase contract chain (P0-P5) + zero-dependency gate",
   "author": {
     "name": "baimax",
     "email": "baimax159@gmail.com"
   },
-  "homepage": "https://github.com/baimax159-tech/ai-sdd",
-  "repository": "https://github.com/baimax159-tech/ai-sdd",
+  "homepage": "https://github.com/baimax159-tech/claude-forge",
+  "repository": "https://github.com/baimax159-tech/claude-forge",
   "license": "MIT",
   "keywords": [
     "sdd",
