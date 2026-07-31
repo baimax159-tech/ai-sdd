@@ -19,7 +19,7 @@
 ### Codex
 
 ```bash
-codex plugin marketplace add https://github.com/baimax159-tech/ai-sdd --sparse .agents/plugins
+codex plugin marketplace add https://github.com/baimax159-tech/ai-sdd --sparse .agents/plugins --sparse plugins/ai-sdd
 codex plugin install ai-sdd@ai-sdd
 ```
 
