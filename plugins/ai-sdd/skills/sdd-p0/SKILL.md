@@ -183,17 +183,20 @@ allowed-tools: Read Write Edit Glob Bash AskUserQuestion
 2. 从搜索结果中展示候选来源；用户选择并批准后才安装，禁止根据搜索排序自动选择。
 
 **Hook**：
-1. 先识别当前宿主。Claude Code 才读取 `.claude/settings.json`；Codex 按其当前官方配置方式处理，不能把 Claude 配置写入 Codex 项目。
-2. 用 `Edit` 在当前宿主的等效 PostToolUse 配置中追加格式化 hook。
+1. 先识别当前宿主，分别读取 Claude Code 的 `.claude/settings.json`，或 Codex 受信任项目的 `.codex/hooks.json` / `.codex/config.toml`；不得把一个宿主的配置格式写入另一个宿主。
+2. 用 `Edit` 在当前宿主的 `PostToolUse` 配置中追加格式化 hook，并在写入前展示精确 diff 和命令。
 3. Claude Code 配置格式遵循官方 plugin-dev `hook-development` 的 PostToolUse 模式，结构：
    ```json
    {"hooks":{"PostToolUse":[{"matcher":"Edit|Write","hooks":[{"type":"command","command":"gofmt -w $FILEPATH","async":true}]}]}}
    ```
-4. 配置模板按语言替换命令（如 Go 用 `gofmt -w`，Rust 用 `rustfmt`）；宿主没有等效 hook 时归入手动清单。
+4. Codex 只使用当前官方支持的 command hook；handler 从标准输入 JSON 读取工具参数，不能照搬 Claude Code 的 `$FILEPATH` 环境变量。Codex 当前不支持异步 command hook，不得为其写入 `async: true`。
+5. 配置模板按语言替换命令（如 Go 用 `gofmt -w`，Rust 用 `rustfmt`）；无法可靠解析目标文件或宿主没有等效 hook 时归入手动清单。
 
 **Agent**：
 1. 来自 plugin 的 → 提示安装对应 plugin。
-2. Claude Code 的自定义 agent 才生成到 `.claude/agents/`；Codex 将该需求转为 AGENTS.md 指引、skill 或明确提示其当前可用的等效机制。
+2. Claude Code 的项目 Agent 按其官方格式生成到 `.claude/agents/`。
+3. Codex 的项目 Agent 生成到 `.codex/agents/<agent-name>.toml`，至少包含 `name`、`description`、`developer_instructions`；按职责设置 `sandbox_mode` 等会话配置，探索和审查角色默认只读。
+4. 只修改当前项目范围；除非用户明确要求，不写入用户级 `~/.codex/agents/`。如果当前 Codex 版本不支持该机制，则退化为 `AGENTS.md` 指引或 Skill，并明确记录差异。
 
 ### 手动安装清单
 
