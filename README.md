@@ -6,22 +6,50 @@
 
 ## 安装
 
-### Claude Code
+以下命令针对当前发布镜像；先将仓库克隆到本地，或在已下载的发布目录中执行。
 
 ```bash
-/plugin marketplace add https://github.com/baimax159-tech/ai-sdd
+git clone https://github.com/baimax159-tech/ai-sdd
+cd ai-sdd
 ```
 
-```bash
+### Claude Code
+
+在 Claude Code 中执行：
+
+```text
+/plugin marketplace add https://github.com/baimax159-tech/ai-sdd
 /plugin install ai-sdd@ai-sdd
 ```
 
 ### Codex
 
+在 Codex 中执行：
+
 ```bash
 codex plugin marketplace add https://github.com/baimax159-tech/ai-sdd --sparse .agents/plugins --sparse plugins/ai-sdd
 codex plugin add ai-sdd@ai-sdd
 ```
+
+### DeepSeek Harness
+
+在发布镜像根目录启动 DeepSeek Harness；它会从 `.agents/skills/` 发现 Skill。
+
+```bash
+dsh web
+```
+
+### pi
+
+在发布镜像根目录执行以下命令，安装 `pi/package.json` 声明的 Skill 包：
+
+```bash
+pi install ./pi
+```
+
+升级时重新拉取发布镜像后重复 `pi install ./pi`；卸载由 pi 的官方包管理命令完成。
+
+Included Agent Skills: \`ai-sdd/sdd-p0\`, \`ai-sdd/sdd-p1\`, \`ai-sdd/sdd-p2\`, \`ai-sdd/sdd-p3\`, \`ai-sdd/sdd-p4\`, \`ai-sdd/sdd-p5\`
 
 ## 插件与技能
 
