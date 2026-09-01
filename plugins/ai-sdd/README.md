@@ -7,21 +7,21 @@ Skill 驱动的六阶段契约链开发插件。P0 能力就绪 → P1 需求 �
 ## 安装
 
 ```bash
-/plugin install ai-sdd@ai-sdd
+codex plugin add ai-sdd@ai-sdd
 ```
 
 ## 使用方式
 
-安装后由 skill 驱动 P0-P5 工作流；Claude Code 可使用下列命令入口，Codex 可直接用自然语言触发相同阶段：
+安装后由 Skill 驱动 P0-P5 工作流；Codex 可直接用自然语言或显式调用下列 Skill：
 
 | 阶段 | 触发方式 | 说明 |
 |------|----------|------|
-| P0 能力就绪 | `/ai-sdd:sdd-p0` 或说"检查技能"/"准备开发环境" | 四维度（Skill/MCP/Agent/Hook）覆盖检查与安装 |
-| P1 需求 | `/ai-sdd:sdd-p1` 或说"做 XXX"/"迁移" | 多轮追问 → 生成 P1-req/P1p-diff 契约 |
-| P2 架构 | `/ai-sdd:sdd-p2` 或说"开始架构设计" | 覆盖映射 + 接口定义 + ADR |
-| P3 实现 | `/ai-sdd:sdd-p3` 或说"开始实现" | Task 协议 + subagent 编码 + 进度勾选 + 三闸 |
-| P4 验证 | `/ai-sdd:sdd-p4` 或说"开始验证" | 覆盖矩阵 + 验证执行 + 回滚预案 |
-| P5 规则沉淀 | `/ai-sdd:sdd-p5` 或说"沉淀规则" | 从实现中提炼框架级规则供后续复用 |
+| P0 能力就绪 | `$ai-sdd:sdd-p0` 或说"检查技能"/"准备开发环境" | Codex Skill/MCP/Agent/Hook 覆盖检查 |
+| P1 需求 | `$ai-sdd:sdd-p1` 或说"做 XXX"/"迁移" | 多轮追问 → 生成 P1-req/P1p-diff 契约 |
+| P2 架构 | `$ai-sdd:sdd-p2` 或说"开始架构设计" | 覆盖映射 + 接口定义 + ADR |
+| P3 实现 | `$ai-sdd:sdd-p3` 或说"开始实现" | Task 协议 + Codex 子 Agent 编码 + 三闸 |
+| P4 验证 | `$ai-sdd:sdd-p4` 或说"开始验证" | 覆盖矩阵 + 验证执行 + 回滚预案 |
+| P5 规则沉淀 | `$ai-sdd:sdd-p5` 或说"沉淀规则" | 从实现中提炼框架级规则供后续复用 |
 
 ## 契约链
 
@@ -34,7 +34,7 @@ Skill 驱动的六阶段契约链开发插件。P0 能力就绪 → P1 需求 �
 
 ## CLI 工具
 
-`PLUGIN_ROOT` 表示插件根目录：Claude Code 可设为 `$CLAUDE_PLUGIN_ROOT`；Codex 使用当前已安装插件的实际根路径。
+`PLUGIN_ROOT` 表示当前已安装 Codex 插件的实际根路径。
 
 ```bash
 node ${PLUGIN_ROOT}/scripts/sdd.mjs gate SDD/contracts/<file>.md          # 契约校验
@@ -46,7 +46,7 @@ node ${PLUGIN_ROOT}/scripts/sdd.mjs verify-artifacts SDD/contracts/P3-impl-<name
 
 ```
 ai-sdd/
-├── .claude-plugin/plugin.json
+├── .codex-plugin/plugin.json
 ├── skills/
 │   ├── sdd-p0/          ← P0 能力就绪检查
 │   ├── sdd-p1/          ← P1 需求获取
@@ -57,7 +57,6 @@ ai-sdd/
 ├── scripts/
 │   ├── sdd.mjs          ← CLI 入口（10 子命令）
 │   └── lib/             ← 内部模块
-├── commands/help.md
 └── README.md
 ```
 
